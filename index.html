@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>羽筑空間設計｜電子名片</title>
+<style>
+  :root { --bg:#0B2447; --fg:#FFFFFF; --muted:#AEBBD1; --green:#06C755; }
+  * { box-sizing:border-box; }
+  body { margin:0; min-height:100vh; background:var(--bg); color:var(--fg);
+         font-family:-apple-system,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
+         display:flex; align-items:center; justify-content:center; padding:24px 16px; }
+  main { width:100%; max-width:380px; text-align:center; }
+  img.logo { width:120px; height:120px; border-radius:12px; }
+  h1 { font-size:22px; margin:16px 0 4px; }
+  p { color:var(--muted); font-size:15px; line-height:1.6; margin:6px 0; }
+  button, a.btn { display:block; width:100%; margin:16px 0 0; padding:14px; border:0; border-radius:10px;
+                  background:var(--green); color:#FFFFFF; font-size:17px; font-weight:700;
+                  text-decoration:none; cursor:pointer; }
+  a.btn.alt { background:#DDE3F7; color:#000000; }
+  #msg { min-height:1.6em; margin-top:16px; white-space:pre-wrap; }
+</style>
+</head>
+<body>
+<main>
+  <img class="logo" src="https://www.yuchudesign.com/wp-content/uploads/2024/08/2024-768x768.png" alt="Yu Chu Interior Design">
+  <h1 id="title">羽筑空間設計 電子名片</h1>
+  <p id="sub">正在連結 LINE…</p>
+  <div id="actions"></div>
+  <p id="msg"></p>
+</main>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js" charset="utf-8"></script>
+<script>
+// LINE 電子名片分享頁（羽筑空間設計）
+// 用法：https://liff.line.me/<LIFF_ID>?c=bob（陳柏丞）或 ?c=tien（田志傑）
+// 直接開本頁加 ?go=mailto:... 會轉去寄信（卡片上的 Email 按鈕用；LINE 卡片不能直接放 mailto）
+const LIFF_ID = '2012731994-Cv4N5qSY';
+
+const PEOPLE = {
+  bob: {
+    label: '陳柏丞 Bob Chen',
+    enName: 'Bob Chen', enTitle: 'Administration Manager',
+    zhName: '陳柏丞', zhTitle: '行政經理',
+    mobileIntl: '+886-963-181-213', mobile: '0963-181-213'
+  },
+  tien: {
+    label: '田志傑 Steve Tien',
+    enName: 'Chih-Chieh (Steve) Tien', enTitle: 'Founder & Chairman',
+    zhName: '田志傑', zhTitle: '董事長',
+    mobileIntl: '+886-917-662-733', mobile: '0917-662-733'
+  }
+};
+
+const BG = '#0B2447';
+const LOGO = 'https://www.yuchudesign.com/wp-content/uploads/2024/08/2024-768x768.png';
+const PHOTO1 = 'https://www.yuchudesign.com/wp-content/uploads/2026/10/1-1024x684.jpg';
+const PHOTO2 = 'https://www.yuchudesign.com/wp-content/uploads/2026/11/1-1024x689.jpg';
+const WEB = 'https://www.yuchudesign.com/';
+const PORTFOLIO = 'https://www.yuchudesign.com/interior/';
+const MAP = 'https://www.google.com/maps/search/?api=1&query=%E6%96%B0%E7%AB%B9%E7%B8%A3%E7%AB%B9%E5%8C%97%E5%B8%82%E6%83%9F%E9%A6%A8%E8%A1%9795%E8%99%9F';
+const BTN_COLORS = ['#DDE3F7', '#B7C3EF', '#8E9CE8'];
+
+const EN_INTRO = 'Jiu Tian Interior Design Co., Ltd.\nInterior design studio in Hsinchu, Taiwan, since 2009';
+const ZH_INTRO = '久田室內裝修有限公司\n2009 年創立於新竹，國際設計獎 30 項以上';
+const CO_EN = "Founded in 2009 in Hsinchu, Taiwan. Architecture, interior design, construction and our own cabinetry factory, all in-house.\n923 projects completed (2015–2025)\nStudios: Hsinchu, Banqiao, Da'an, Taichung\nOverseas: Osaka, Perth, Zhuhai\n13F.-3, No. 95, Weixin St., Zhubei City, Hsinchu County 302, Taiwan\nTel +886-3-550-1946";
+const CO_ZH = '2009 年創立於新竹竹北，建築規劃、室內設計、工程施工到系統櫃製造，都由自有團隊完成。\n完工案場 923 場（2015–2025）\n據點：新竹、板橋、大安、台中｜大阪、伯斯、珠海\n地址：新竹縣竹北市惟馨街95號13樓之3\n電話：03-5501946';
+const SERVICES = 'Architecture | Interior design | Construction | Cabinetry | Material & furniture trade\n建築規劃｜室內設計｜工程施工｜系統櫃｜建材與家具進出口\n\n2026 Tokyo Design Awards — Gold 東京設計獎金獎\n2025 iF Design Award (Germany) 德國 iF 設計獎\n2025 French & London Design Awards — Gold 法國、倫敦設計獎金獎\nKYOTEN (Japan): 3 export shipments to Taiwan 京展日本→台灣出口 3 批';
+
+function text(t, o) { return Object.assign({ type: 'text', text: t, wrap: true }, o); }
+function button([label, uri], i) {
+  return { type: 'box', layout: 'vertical', height: '40px', paddingStart: 'md', paddingEnd: 'md',
+           cornerRadius: '6px', justifyContent: 'center', backgroundColor: BTN_COLORS[i],
+           action: { type: 'uri', label, uri },
+           contents: [text(label, { size: 'md', align: 'center', color: '#000000', weight: 'bold', wrap: false })] };
+}
+function bubble(hero, bodyContents, buttons) {
+  return {
+    type: 'bubble', size: 'kilo',
+    hero: { type: 'image', url: hero, size: 'full', aspectMode: 'cover', aspectRatio: '1:1' },
+    body: { type: 'box', layout: 'vertical', spacing: 'md', paddingTop: 'xl', paddingBottom: 'md',
+            paddingStart: 'xl', paddingEnd: 'xl', backgroundColor: BG, contents: bodyContents },
+    footer: { type: 'box', layout: 'vertical', spacing: 'sm', paddingTop: 'sm', paddingBottom: 'xl',
+              paddingStart: 'xl', paddingEnd: 'xl', backgroundColor: BG, contents: buttons.map(button) },
+    styles: { body: { backgroundColor: BG }, footer: { separator: false, backgroundColor: BG } }
+  };
+}
+function nameBubble(name, title, brand, intro, buttons) {
+  return bubble(LOGO, [
+    text(name, { size: 'xl', color: '#FFFFFF', weight: 'bold' }),
+    { type: 'box', layout: 'vertical', spacing: 'md', contents: [
+      { type: 'box', layout: 'vertical', spacing: 'xs', contents: [
+        text(title, { size: 'sm', color: '#E4E9F2', weight: 'bold' }),
+        text(brand, { size: 'xs', color: '#AEBBD1' })
+      ] },
+      { type: 'separator', color: '#EEEEEE' },
+      text(intro, { size: 'sm', color: '#E4E9F2' })
+    ] }
+  ], buttons);
+}
+function companyBubble(hero, title, body, buttons) {
+  return bubble(hero, [
+    text(title, { size: 'xl', color: '#FFFFFF', weight: 'bold' }),
+    text(body, { size: 'sm', color: '#E4E9F2', margin: 'md' })
+  ], buttons);
+}
+
+function buildCard(key, pageUrl) {
+  const p = PEOPLE[key];
+  const mail = pageUrl + '?go=' + encodeURIComponent('mailto:yuchuclient@gmail.com');
+  const share = 'https://liff.line.me/' + LIFF_ID + '?c=' + key;
+  return {
+    type: 'carousel',
+    contents: [
+      nameBubble(p.enName, p.enTitle, 'Yu Chu Interior Design', EN_INTRO,
+        [['Call me', 'tel:' + p.mobileIntl], ['Email me', mail], ['Share with friends', share]]),
+      nameBubble(p.zhName, p.zhTitle, '羽筑空間設計', ZH_INTRO,
+        [['撥打手機', 'tel:' + p.mobile], ['寄 Email', mail], ['把我分享給好友', share]]),
+      companyBubble(PHOTO1, 'Yu Chu Interior Design', CO_EN,
+        [['Website', WEB], ['Map', MAP], ['Call office', 'tel:+886-3-550-1946']]),
+      companyBubble(PHOTO1, '羽筑空間設計', CO_ZH,
+        [['官方網站', WEB], ['地圖導航', MAP], ['公司電話', 'tel:03-5501946']]),
+      companyBubble(PHOTO2, 'Services & Awards 服務與實績', SERVICES,
+        [['Portfolio 作品精選', PORTFOLIO], ['Share 分享給好友', share]])
+    ]
+  };
+}
+
+const $ = id => document.getElementById(id);
+const say = t => { $('msg').textContent = t; };
+
+async function main() {
+  try {
+    await liff.init({ liffId: LIFF_ID });
+  } catch (e) {
+    $('sub').textContent = '';
+    say('LINE 連線失敗：' + (e.code || '') + ' ' + (e.message || e));
+    return;
+  }
+  const key = new URLSearchParams(location.search).get('c');
+  if (!PEOPLE[key]) {
+    $('sub').textContent = '請選擇要傳送的名片';
+    $('actions').innerHTML = Object.keys(PEOPLE).map(k =>
+      '<a class="btn alt" href="https://liff.line.me/' + LIFF_ID + '?c=' + k + '">' + PEOPLE[k].label + '</a>').join('');
+    return;
+  }
+  const p = PEOPLE[key];
+  $('title').textContent = p.label;
+  $('sub').textContent = '羽筑空間設計 LINE 電子名片（中英文 5 頁）';
+  if (!liff.isLoggedIn()) {
+    $('actions').innerHTML = '<button id="login">用 LINE 登入後傳送</button>';
+    $('login').onclick = () => liff.login({ redirectUri: location.href });
+    return;
+  }
+  if (!liff.isApiAvailable('shareTargetPicker')) {
+    say('這裡不能開啟 LINE 的好友選擇畫面，請改用手機 LINE 打開這個連結。');
+    return;
+  }
+  const flex = buildCard(key, location.origin + location.pathname);
+  const altText = '羽筑空間設計｜' + p.label + ' 電子名片';
+  const share = async () => {
+    say('');
+    try {
+      const res = await liff.shareTargetPicker([{ type: 'flex', altText, contents: flex }], { isMultiple: true });
+      say(res ? '已傳送。' : '已取消。');
+    } catch (e) {
+      say('傳送失敗：' + (e.code || '') + ' ' + (e.message || ''));
+    }
+  };
+  $('actions').innerHTML = '<button id="share">選擇好友傳送名片</button>';
+  $('share').onclick = share;
+  if (liff.isInClient()) share();
+}
+
+const go = new URLSearchParams(location.search).get('go');
+if (go && /^mailto:/i.test(go)) {
+  $('sub').textContent = '正在開啟寄信…';
+  location.replace(go);
+} else {
+  main();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Tien;Chih-Chieh;;;
+FN:Chih-Chieh (Steve) Tien 田志傑
+NICKNAME:Steve
+ORG:Yu Chu Interior Design 羽筑空間設計
+TITLE:Founder & Chairman 董事長
+TEL;TYPE=CELL,VOICE:+886-917-662-733
+TEL;TYPE=WORK,VOICE:+886-3-550-1946
+EMAIL;TYPE=INTERNET,WORK:yuchuclient@gmail.com
+URL:https://www.yuchudesign.com/
+ADR;TYPE=WORK:;;13F.-3\, No. 95\, Weixin St.;Zhubei City;Hsinchu County;302;Taiwan
+NOTE:Digital card https://bobchen0907.github.io/yuchu-card/tien/
+END:VCARD

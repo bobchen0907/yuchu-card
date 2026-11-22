@@ -1,0 +1,15 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Chen;Bob;;;
+FN:Bob Chen 陳柏丞
+ORG:Yu Chu Interior Design 羽筑空間設計
+TITLE:Administration Manager 行政經理
+TEL;TYPE=CELL,VOICE:+886-963-181-213
+TEL;TYPE=WORK,VOICE:+886-3-550-1946
+EMAIL;TYPE=INTERNET,WORK:yuchuclient@gmail.com
+URL:https://www.yuchudesign.com/
+URL;TYPE=LINE:https://line.me/ti/p/pZuNq7VBbz
+URL;TYPE=WhatsApp:https://wa.me/886963181213
+ADR;TYPE=WORK:;;13F.-3\, No. 95\, Weixin St.;Zhubei City;Hsinchu County;302;Taiwan
+NOTE:Digital card https://bobchen0907.github.io/yuchu-card/bob/
+END:VCARD
